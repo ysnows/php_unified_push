@@ -33,7 +33,7 @@
 ## 安装
 
 ```
-composer require yunchuang/push
+composer require ysnows/unified_push
 ```
 
 

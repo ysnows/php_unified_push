@@ -45,7 +45,7 @@ class HuaweiV2Gateway extends Gateway
                 'title' => $message->title,
                 'body' => $message->subTitle,
                 'tag' => $message->notifyId ?: null,
-                'notify_id' => $message->notifyId ?: -1,
+//                'notify_id' => $message->notifyId ?: -1,
                 'click_action' => [
                     'type' => 1,
                     'intent' => $this->generateIntent($this->config->get('appPkgName'),

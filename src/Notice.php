@@ -133,10 +133,10 @@ class Notice
 
     public function removeTopic($topic, $platform, $token)
     {
-        $redis = new Redis();
-        $res = $redis->handler()->sRem('topic_' . $topic, $platform . '_' . $token);
-//        $redis->tag($topic)->rm($token);
-        return outJson($res);
+        $push = new Push($this->config);
+        $push->setPusher($platform);
+        return $push->removeTopic($token, $topic);
+
     }
 
     public function getTopic($topic = null)

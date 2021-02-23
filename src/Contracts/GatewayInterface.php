@@ -12,6 +12,7 @@ interface GatewayInterface
     public function getName();
 
     public function addTopic($regid, $topic);
+    public function removeTopic($regid, $topic);
 
     public function getGatewayName();
 

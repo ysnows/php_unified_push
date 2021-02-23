@@ -50,6 +50,12 @@ abstract class Gateway implements GatewayInterface
         return null;
     }
 
+    public function removeTopic($regid, $topic)
+    {
+        // TODO: Implement removeTopic() method.
+        return null;
+    }
+
     /**
      * Set timeout.
      *

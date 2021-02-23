@@ -44,10 +44,6 @@ class Push
         return $this->gateway->getAuthToken();
     }
 
-    public function addTopic($regid, $topic)
-    {
-        return $this->gateway->addTopic($regid, $topic);
-    }
 
     public function pushNotice($to, $message, array $options = [])
     {
@@ -132,5 +128,15 @@ class Push
     protected function checkOptions(array $options)
     {
         return array_map('trim', $options);
+    }
+
+    public function addTopic($regid, $topic)
+    {
+        return $this->gateway->addTopic($regid, $topic);
+    }
+
+    public function removeTopic($regid, $topic)
+    {
+        return $this->gateway->removeTopic($regid, $topic);
     }
 }

@@ -136,4 +136,10 @@ class XiaomiGateway extends Gateway
         $subscription = new Subscription();
         return $subscription->subscribe($regid, $topic);
     }
+
+    public function removeTopic($regid, $topic)
+    {
+        $subscription = new Subscription();
+        return $subscription->unsubscribe($regid, $topic);
+    }
 }

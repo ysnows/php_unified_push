@@ -18,7 +18,7 @@ class XiaomiGateway extends Gateway
 
     const GATEWAY_NAME = 'xiaomi';
 
-    protected $maxTokens = 100;
+    protected $maxTokens = 1000;
 
 
     public function getAuthToken()

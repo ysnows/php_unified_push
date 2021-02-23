@@ -7,6 +7,9 @@ namespace MingYuanYun\Push\Gateways;
 use MingYuanYun\Push\AbstractMessage;
 use MingYuanYun\Push\Exceptions\GatewayErrorException;
 use MingYuanYun\Push\Traits\HasHttpRequest;
+use xmpush\Builder;
+use xmpush\Constants;
+use xmpush\Sender;
 
 class XiaomiGateway extends Gateway
 {
@@ -27,6 +30,28 @@ class XiaomiGateway extends Gateway
     }
 
     public function pushNotice($to, AbstractMessage $message, array $options = [])
+    {
+
+        Constants::setPackage($this->config->get("appPkgName"));
+        Constants::setSecret($this->config->get("appSecret"));
+
+        $msg = new Builder();
+        $msg->title($message->title);
+        $msg->description($message->subTitle);
+        $msg->passThrough(0);
+        $msg->payload(json_encode($message->payload)); // 对于预定义点击行为，payload会通过点击进入的界面的intent中的extra字段获取，而不会调用到onReceiveMessage方法。
+//        $msg->extra(Builder::notifyEffect, 1); // 此处设置预定义点击行为，1为打开app
+        $msg->extra(Builder::notifyForeground, 1);
+        $msg->restrictedPackageNames([$this->config->get("appPkgName")]);
+        $msg->notifyId($message->notifyId);
+        $msg->build();
+
+
+        $sender = new Sender();
+        return $sender->sendToIds($msg, $to);
+    }
+
+    public function pushNoticeBac($to, AbstractMessage $message, array $options = [])
     {
         $this->setHeader('Authorization', sprintf('key=%s', $this->config->get('appSecret')));
         $data = [
@@ -77,5 +102,10 @@ class XiaomiGateway extends Gateway
                 json_encode($result, JSON_UNESCAPED_UNICODE)
             ));
         }
+    }
+
+    public function pushTopic($to, AbstractMessage $message, array $options = [])
+    {
+
     }
 }

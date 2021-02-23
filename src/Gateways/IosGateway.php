@@ -119,4 +119,9 @@ class IosGateway extends Gateway
             return ctype_xdigit($item);
         });
     }
+
+    public function pushTopic($to, AbstractMessage $message, array $options = [])
+    {
+        // TODO: Implement pushTopic() method.
+    }
 }

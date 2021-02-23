@@ -132,4 +132,9 @@ class HuaweiV2Gateway extends Gateway
         }
         return $to;
     }
+
+    public function pushTopic($to, AbstractMessage $message, array $options = [])
+    {
+        // TODO: Implement pushTopic() method.
+    }
 }

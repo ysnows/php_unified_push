@@ -94,4 +94,9 @@ class MeizuGateway extends Gateway
             ));
         }
     }
+
+    public function pushTopic($to, AbstractMessage $message, array $options = [])
+    {
+        // TODO: Implement pushTopic() method.
+    }
 }

@@ -133,4 +133,9 @@ class HuaweiGateway extends Gateway
         }
         return json_encode($to);
     }
+
+    public function pushTopic($to, AbstractMessage $message, array $options = [])
+    {
+        // TODO: Implement pushTopic() method.
+    }
 }

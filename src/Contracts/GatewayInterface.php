@@ -16,4 +16,6 @@ interface GatewayInterface
     public function getAuthToken();
 
     public function pushNotice($to, AbstractMessage $message, array $options = []);
+
+    public function pushTopic($to, AbstractMessage $message, array $options = []);
 }

@@ -104,7 +104,7 @@ class HttpBase {
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
         if ($method == "Post") {
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, true);
@@ -123,12 +123,13 @@ class HttpBase {
             } else {
                 $server->incrPriority();
             }
-            list($responseHeaderStr, $result) = explode("\r\n\r\n", $content, 2);
-            $responseHeaders = $this->convertHeaders($responseHeaderStr);
-            if (array_key_exists(Constants::X_PUSH_HOST_LIST, $responseHeaders)) {
-                $serverListStr = $responseHeaders[Constants::X_PUSH_HOST_LIST];
-                ServerSwitch::getInstance()->initialize($serverListStr);
-            }
+            $result = $content;
+//            list($responseHeaderStr, $result) = explode("\r\n\r\n", $content, 2);
+//            $responseHeaders = $this->convertHeaders($responseHeaderStr);
+//            if (array_key_exists(Constants::X_PUSH_HOST_LIST, $responseHeaders)) {
+//                $serverListStr = $responseHeaders[Constants::X_PUSH_HOST_LIST];
+//                ServerSwitch::getInstance()->initialize($serverListStr);
+//            }
         } else {
             $server->decrPriority();
             $result = json_encode(array(

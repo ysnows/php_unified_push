@@ -44,12 +44,25 @@ class Push
         return $this->gateway->getAuthToken();
     }
 
+    public function addTopic($regid, $topic)
+    {
+        return $this->gateway->addTopic($regid, $topic);
+    }
+
     public function pushNotice($to, $message, array $options = [])
     {
         $message = $this->formatMessage($message);
         $options = $this->checkOptions($options);
 
         return $this->gateway->pushNotice($to, $message, $options);
+    }
+
+    public function pushTopicNotice($topic, $message, array $options = [])
+    {
+        $message = $this->formatMessage($message);
+        $options = $this->checkOptions($options);
+
+        return $this->gateway->pushTopic($topic, $message, $options);
     }
 
     public function extend($name, Closure $callback)
@@ -104,7 +117,7 @@ class Push
         $nameArr = preg_split("/(\-|_| )/", $name);
         $gateway = implode('', array_map('ucfirst', $nameArr));
 
-        return __NAMESPACE__."\\Gateways\\{$gateway}Gateway";
+        return __NAMESPACE__ . "\\Gateways\\{$gateway}Gateway";
     }
 
     protected function makeGateway($gateway)

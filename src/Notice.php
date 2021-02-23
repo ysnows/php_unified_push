@@ -10,10 +10,44 @@ use think\facade\Cache;
 use xmpush\Builder;
 use xmpush\Constants;
 use xmpush\Sender;
+use xmpush\Subscription;
 use xmpush\TargetedMessage;
 
 class Notice
 {
+
+    private $config = [
+        'huawei' => [
+            'appPkgName' => '', // 包名
+            'clientId' => '',
+            'clientSecret' => ''
+        ],
+        'huawei-v2' => [
+            'appPkgName' => 'com.mixpush.huawei',
+            'clientId' => '103816707',
+            'clientSecret' => 'c79b8c8873cb3b9b5dc38d82cc4980d228e6a883d694662f72a6d53fe2195674'
+        ],
+        'meizu' => [
+            'appPkgName' => 'com.mixpush.meizu',
+            'appId' => '138461',
+            'appSecret' => '3b904f450ca84b2092b9b1648fa24f0d'
+        ],
+        'xiaomi' => [
+            'appPkgName' => 'com.quansu.trailertiger',
+            'appSecret' => 'iAg1xJdHTKUlFNsvJaflaA=='
+        ],
+        'oppo' => [
+            'appPkgName' => 'com.mixpush.oppo',
+            'appKey' => '5ab6095516994c49b6878afbc7e734ed',
+            'masterSecret' => '048d6085dd6f49f489eb3233d839ad9b'
+        ],
+        'vivo' => [
+            'appPkgName' => 'com.quansu.trailertiger',
+            'appId' => '105462756',
+            'appKey' => '2f8871fe668823f9b11612d6e6e02003',
+            'appSecret' => 'fb2dc732-56eb-4378-96a9-0f8f0cebdf02'
+        ]
+    ];
 
     public function mitest()
     {
@@ -92,10 +126,9 @@ class Notice
 
     public function addTopic($topic, $platform, $token)
     {
-        $redis = new Redis();
-        $res = $redis->handler()->sAdd('topic_' . $topic, $platform . '_' . $token);
-//        $redis->tag($topic)->set($token, $platform, 2592000);
-        return outJson($res);
+        $push = new Push($this->config);
+        $push->setPusher($platform);
+        return $push->addTopic($token, $topic);
     }
 
     public function removeTopic($topic, $platform, $token)
@@ -131,8 +164,7 @@ class Notice
             $payload = json_decode($payload, true);
         }
 
-        $redis = new Redis();
-        $platform_token_arr = $redis->handler()->sMembers($topic);
+        $platform_token_arr = ['xiaomi_0S24GxgOtrU7QZ29nPlg18uEfgeiT33ZVW88XWj78PjwtAibK6P/NBSOcZFVBgIE'];
 
         $topic_arr = array();
         foreach ($platform_token_arr as $item) {
@@ -169,87 +201,35 @@ class Notice
         $res = array();
         foreach ($topic_arr as $platform => $tokens) {
             $item = array();
+
             $item['platform'] = $platform;
             $item['tokens'] = $tokens;
-            $item['result'] = $this->pushNotice($message, $platform, $tokens);
+            if ($platform == "xiaomi") {
+                $push = new Push($this->config);
+                $push->setPusher($platform);
+                $result = $push->pushTopicNotice($topic, $message);
+
+            } else {
+                $result = $this->pushNotice($message, $platform, $tokens);
+            }
+            $item['result'] = $result;
+
             $res[] = $item;
         }
-        return json($res);
+        return $res;
     }
 
 
     public function pushNotice($message, $platform, $token = [])
     {
-        $secret = 'iAg1xJdHTKUlFNsvJaflaA==';
-        $package = 'com.quansu.trailertiger';
 
-        $iosCertContent = <<<EOF
------BEGIN PRIVATE KEY-----
-...
------END PRIVATE KEY-----
-EOF;
-
-        $config = [
-            'huawei' => [
-                'appPkgName' => '', // 包名
-                'clientId' => '',
-                'clientSecret' => ''
-            ],
-            'huawei-v2' => [
-                'appPkgName' => 'com.mixpush.huawei',
-                'clientId' => '103816707',
-                'clientSecret' => 'c79b8c8873cb3b9b5dc38d82cc4980d228e6a883d694662f72a6d53fe2195674'
-            ],
-            'meizu' => [
-                'appPkgName' => 'com.mixpush.meizu',
-                'appId' => '138461',
-                'appSecret' => '3b904f450ca84b2092b9b1648fa24f0d'
-            ],
-            'xiaomi' => [
-                'appPkgName' => $package,
-                'appSecret' => $secret
-            ],
-            'oppo' => [
-                'appPkgName' => 'com.mixpush.oppo',
-                'appKey' => '5ab6095516994c49b6878afbc7e734ed',
-                'masterSecret' => '048d6085dd6f49f489eb3233d839ad9b'
-            ],
-            'vivo' => [
-                'appPkgName' => 'com.quansu.trailertiger',
-                'appId' => '105462756',
-                'appKey' => '2f8871fe668823f9b11612d6e6e02003',
-                'appSecret' => 'fb2dc732-56eb-4378-96a9-0f8f0cebdf02'
-            ],
-            'ios' => [
-                'isSandBox' => true, // 是否调试包
-                'certPath' => '', // pem格式推送证书本地绝对路径
-                'password' => '123', // 推送证书密码
-            ],
-            'ios-token' => [
-                'isSandBox' => true,
-                'teamId' => 'D4GSYVE6CN', // 开发者帐号teamId
-                'keyId' => '99BYW4U4SZ', // token认证keyId
-                'secretContent' => $iosCertContent, // 密钥内容，有值时忽略secretFile
-                'secretFile' => 'xxx.p8', // token认证密钥文件本地绝对路径
-                'bundleId' => 'com.mysoft.mdev' // 应用ID
-            ]
-        ];
-
-        $push = new Push($config);
+        $push = new Push($this->config);
         $push->setPusher($platform);
 
-        if (!Cache::has('auth_token_' . $platform)) {
-            $authToken = $push->getAuthToken();
-            if (!empty($authToken)) {
-                Cache::set('auth_token_' . $platform, $authToken['token'], $authToken['expires']);
-            }
-        }
-
+        $authToken = $push->getAuthToken();
         $options = array();
-        if (Cache::has('auth_token_' . $platform)) {
-            $authToken = Cache::get('auth_token_' . $platform);
-            $options['token'] = $authToken;
-        }
+        $options['token'] = $authToken;
+
         try {
             return $push->pushNotice($token, $message, $options);
         } catch (Exception $e) {
@@ -259,12 +239,13 @@ EOF;
 
     private function createNotifyid()
     {
-        $notify_id = Cache::get('notify_id', 0);
-        Cache::inc('notify_id', 1);
-        if ($notify_id > 100) {
-            Cache::set('notify_id', 0);
-        }
-        return $notify_id;
+//        $notify_id = Cache::get('notify_id', 0);
+//        Cache::inc('notify_id', 1);
+//        if ($notify_id > 100) {
+//            Cache::set('notify_id', 0);
+//        }
+//        return $notify_id;
+        return 1;
     }
 
 }

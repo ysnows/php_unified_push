@@ -10,6 +10,7 @@ use MingYuanYun\Push\Traits\HasHttpRequest;
 use xmpush\Builder;
 use xmpush\Constants;
 use xmpush\Sender;
+use xmpush\Subscription;
 
 class XiaomiGateway extends Gateway
 {
@@ -22,7 +23,20 @@ class XiaomiGateway extends Gateway
     const GATEWAY_NAME = 'xiaomi';
 
     protected $maxTokens = 1000;
+    /**
+     * @var Sender
+     */
+    private $sender;
 
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+        Constants::setPackage($this->config->get("appPkgName"));
+        Constants::setSecret($this->config->get("appSecret"));
+        $this->sender = new Sender();
+
+
+    }
 
     public function getAuthToken()
     {
@@ -32,8 +46,6 @@ class XiaomiGateway extends Gateway
     public function pushNotice($to, AbstractMessage $message, array $options = [])
     {
 
-        Constants::setPackage($this->config->get("appPkgName"));
-        Constants::setSecret($this->config->get("appSecret"));
 
         $msg = new Builder();
         $msg->title($message->title);
@@ -47,8 +59,7 @@ class XiaomiGateway extends Gateway
         $msg->build();
 
 
-        $sender = new Sender();
-        return $sender->sendToIds($msg, $to);
+        return $this->sender->sendToIds($msg, $to);
     }
 
     public function pushNoticeBac($to, AbstractMessage $message, array $options = [])
@@ -104,8 +115,25 @@ class XiaomiGateway extends Gateway
         }
     }
 
-    public function pushTopic($to, AbstractMessage $message, array $options = [])
+    public function pushTopic($topic, AbstractMessage $message, array $options = [])
     {
+        $msg = new Builder();
+        $msg->title($message->title);
+        $msg->description($message->subTitle);
+        $msg->passThrough(0);
+        $msg->payload(json_encode($message->payload)); // 对于预定义点击行为，payload会通过点击进入的界面的intent中的extra字段获取，而不会调用到onReceiveMessage方法。
+//        $msg->extra(Builder::notifyEffect, 1); // 此处设置预定义点击行为，1为打开app
+        $msg->extra(Builder::notifyForeground, 1);
+        $msg->restrictedPackageNames([$this->config->get("appPkgName")]);
+        $msg->notifyId($message->notifyId);
+        $msg->build();
 
+        return $this->sender->broadcast($msg, $topic);
+    }
+
+    public function addTopic($regid, $topic)
+    {
+        $subscription = new Subscription();
+        return $subscription->subscribe($regid, $topic);
     }
 }

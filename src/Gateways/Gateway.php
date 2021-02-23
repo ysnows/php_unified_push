@@ -44,6 +44,12 @@ abstract class Gateway implements GatewayInterface
         return $this->timeout ?: $this->config->get('timeout', self::DEFAULT_TIMEOUT);
     }
 
+    public function addTopic($regid, $topic)
+    {
+        // TODO: Implement addTopic() method.
+        return null;
+    }
+
     /**
      * Set timeout.
      *
@@ -77,6 +83,7 @@ abstract class Gateway implements GatewayInterface
 
         return $this;
     }
+
 
     /**
      * {@inheritdoc}

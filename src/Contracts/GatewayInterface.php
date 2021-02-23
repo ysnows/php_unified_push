@@ -11,6 +11,8 @@ interface GatewayInterface
 {
     public function getName();
 
+    public function addTopic($regid, $topic);
+
     public function getGatewayName();
 
     public function getAuthToken();

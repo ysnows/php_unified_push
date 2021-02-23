@@ -28,16 +28,20 @@ class Push
         $this->config = new Config($config);
     }
 
-    public function setPusher($gateway, $authToken)
+    public function setPusher($gateway)
     {
         $this->gatewayConfig = $this->config->get($gateway);
         $this->gateway = $this->createGateway($gateway);
-        $this->gateway->setAuthToken($authToken);
     }
 
     public function getPusher()
     {
         return $this->gateway->getGatewayName();
+    }
+
+    public function setAuthToken($authToken)
+    {
+        $this->gateway->setAuthToken($authToken);
     }
 
     public function requestAuthToken()

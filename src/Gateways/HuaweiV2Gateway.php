@@ -37,6 +37,9 @@ class HuaweiV2Gateway extends Gateway
 
     public function pushNotice($to, AbstractMessage $message, array $options = [])
     {
+        if (empty($this->getAuthToken())) {
+            return "请先获取authToken";
+        }
 
         $androidConfig = [
             'collapse_key' => -1,
@@ -92,6 +95,10 @@ class HuaweiV2Gateway extends Gateway
 
     public function pushTopic($topic, AbstractMessage $message, array $options = [])
     {
+
+        if (empty($this->getAuthToken())) {
+            return "请先获取authToken";
+        }
 
         $androidConfig = [
             'collapse_key' => -1,
@@ -149,6 +156,10 @@ class HuaweiV2Gateway extends Gateway
     public function addTopic($regid, $topic)
     {
 
+        if (empty($this->getAuthToken())) {
+            return "请先获取authToken";
+        }
+
         $data = [
             'message' => [
                 'topic' => $topic,
@@ -171,6 +182,10 @@ class HuaweiV2Gateway extends Gateway
 
     public function removeTopic($regid, $topic)
     {
+
+        if (empty($this->getAuthToken())) {
+            return "请先获取authToken";
+        }
 
         $data = [
             'message' => [

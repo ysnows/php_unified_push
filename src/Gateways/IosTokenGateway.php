@@ -21,7 +21,7 @@ class IosTokenGateway extends Gateway
 
     protected $maxTokens = 100;
 
-    public function getAuthToken()
+    public function requestAuthToken()
     {
         $token = $this->generateJwt();
         return [
@@ -63,7 +63,7 @@ class IosTokenGateway extends Gateway
             $token = $options['token'];
             unset($options['token']);
         } else {
-            $tokenInfo = $this->getAuthToken();
+            $tokenInfo = $this->requestAuthToken();
             $token = $tokenInfo['token'];
         }
 

@@ -34,7 +34,7 @@ class VivoGateway extends Gateway
         'Content-Type' => 'application/json'
     ];
 
-    public function getAuthToken()
+    public function requestAuthToken()
     {
         $data = [
             'appId' => $this->config->get('appId'),
@@ -63,7 +63,7 @@ class VivoGateway extends Gateway
             $token = $options['token'];
             unset($options['token']);
         } else {
-            $tokenInfo = $this->getAuthToken();
+            $tokenInfo = $this->requestAuthToken();
             $token = $tokenInfo['token'];
         }
         $this->setHeader('authToken', $token);

@@ -35,7 +35,7 @@ class OppoGateway extends Gateway
     ];
 
 
-    public function getAuthToken()
+    public function requestAuthToken()
     {
         $data = [
             'app_key' => $this->config->get('appKey'),
@@ -63,7 +63,7 @@ class OppoGateway extends Gateway
             $token = $options['token'];
             unset($options['token']);
         } else {
-            $tokenInfo = $this->getAuthToken();
+            $tokenInfo = $this->requestAuthToken();
             $token = $tokenInfo['token'];
         }
         $messageData = [

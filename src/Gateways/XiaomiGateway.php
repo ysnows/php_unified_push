@@ -38,7 +38,7 @@ class XiaomiGateway extends Gateway
 
     }
 
-    public function getAuthToken()
+    public function requestAuthToken()
     {
         return null;
     }

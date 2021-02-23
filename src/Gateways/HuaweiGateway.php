@@ -37,7 +37,7 @@ class HuaweiGateway extends Gateway
             $token = $options['token'];
             unset($options['token']);
         } else {
-            $tokenInfo = $this->getAuthToken();
+            $tokenInfo = $this->requestAuthToken();
             $token = $tokenInfo['token'];
         }
         $payload = [
@@ -84,7 +84,7 @@ class HuaweiGateway extends Gateway
         return $result['requestId'];
     }
 
-    public function getAuthToken()
+    public function requestAuthToken()
     {
         $data = [
             'grant_type' => 'client_credentials',

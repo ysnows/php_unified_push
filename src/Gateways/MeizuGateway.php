@@ -27,7 +27,7 @@ class MeizuGateway extends Gateway
     protected $maxTokens = 1000;
 
 
-    public function getAuthToken()
+    public function requestAuthToken()
     {
         return null;
     }

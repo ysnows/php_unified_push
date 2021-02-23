@@ -21,7 +21,7 @@ class IosGateway extends Gateway
      */
     protected $pusher = null;
 
-    public function getAuthToken()
+    public function requestAuthToken()
     {
         return null;
     }

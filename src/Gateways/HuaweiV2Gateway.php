@@ -17,6 +17,8 @@ class HuaweiV2Gateway extends Gateway
 
     // https://push-api.cloud.huawei.com/v1/[appid]/messages:send
     const PUSH_URL = 'https://push-api.cloud.huawei.com/v1/%s/messages:send';
+    const SUBSCRIBE_TOPIC_URL = 'https://push-api.cloud.huawei.com/v1/%s/topic:subscribe';
+    const UNSUBSCRIBE_TOPIC_URL = 'https://push-api.cloud.huawei.com/v1/%s/topic:unsubscribe';
 
     const OK_CODE = '80000000';
 
@@ -28,15 +30,13 @@ class HuaweiV2Gateway extends Gateway
         'Content-Type' => 'application/x-www-form-urlencoded',
     ];
 
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+    }
+
     public function pushNotice($to, AbstractMessage $message, array $options = [])
     {
-        if (!empty($options['token'])) {
-            $token = $options['token'];
-            unset($options['token']);
-        } else {
-            $tokenInfo = $this->getAuthToken();
-            $token = $tokenInfo['token'];
-        }
 
         $androidConfig = [
             'collapse_key' => -1,
@@ -77,7 +77,7 @@ class HuaweiV2Gateway extends Gateway
             ],
         ];
 
-        $this->setHeader('Authorization', 'Bearer ' . $token);
+        $this->setHeader('Authorization', 'Bearer ' . $this->getAuthToken());
 
         $result = $this->postJson($this->buildPushUrl(), $data, $this->getHeaders());
         if (!isset($result['code']) || $result['code'] != self::OK_CODE) {
@@ -90,7 +90,109 @@ class HuaweiV2Gateway extends Gateway
         return $result['requestId'];
     }
 
-    public function getAuthToken()
+    public function pushTopic($topic, AbstractMessage $message, array $options = [])
+    {
+
+        $androidConfig = [
+            'collapse_key' => -1,
+            'bi_tag' => $message->businessId ?: '',
+            'notification' => [
+                'title' => $message->title,
+                'body' => $message->subTitle,
+                'tag' => $message->notifyId ?: null,
+//                'notify_id' => $message->notifyId ?: -1,
+                'click_action' => [
+                    'type' => 1,
+                    'intent' => $this->generateIntent($this->config->get('appPkgName'),
+                        [
+                            'title' => $message->title,
+                            'description' => $message->subTitle,
+                            'payload' => json_encode($message->payload, JSON_UNESCAPED_UNICODE),
+                        ]),
+                ]
+            ]
+        ];
+        if ($message->badge) {
+            if (preg_match('/^\d+$/', $message->badge)) {
+                $androidConfig['notification']['badge'] = [
+                    'set_num' => intval($message->badge),
+                    'class' => 'com.mysoft.core.activity.LauncherActivity'
+                ];
+            } else {
+                $androidConfig['notification']['badge'] = [
+                    'add_num' => intval($message->badge),
+                    'class' => 'com.mysoft.core.activity.LauncherActivity'
+                ];
+            }
+        }
+        $androidConfig = $this->mergeGatewayOptions($androidConfig, $message->gatewayOptions);
+        $data = [
+            'message' => [
+                'topic' => $topic,
+                'android' => $androidConfig,
+            ],
+        ];
+
+        $this->setHeader('Authorization', 'Bearer ' . $this->getAuthToken());
+
+        $result = $this->postJson($this->buildPushUrl(), $data, $this->getHeaders());
+        if (!isset($result['code']) || $result['code'] != self::OK_CODE) {
+            throw new GatewayErrorException(sprintf(
+                '华为推送失败 > [%s] %s',
+                isset($result['code']) ? $result['code'] : '-99',
+                json_encode($result, JSON_UNESCAPED_UNICODE)
+            ));
+        }
+        return $result['requestId'];
+    }
+
+    public function addTopic($regid, $topic)
+    {
+
+        $data = [
+            'message' => [
+                'topic' => $topic,
+                'tokenArray' => [$regid],
+            ],
+        ];
+
+        $this->setHeader('Authorization', 'Bearer ' . $this->getAuthToken());
+
+        $result = $this->postJson($this->buildSubscribeTopicUrl(), $data, $this->getHeaders());
+        if (!isset($result['code']) || $result['code'] != self::OK_CODE) {
+            throw new GatewayErrorException(sprintf(
+                '华为推送失败 > [%s] %s',
+                isset($result['code']) ? $result['code'] : '-99',
+                json_encode($result, JSON_UNESCAPED_UNICODE)
+            ));
+        }
+        return $result['requestId'];
+    }
+
+    public function removeTopic($regid, $topic)
+    {
+
+        $data = [
+            'message' => [
+                'topic' => $topic,
+                'tokenArray' => [$regid],
+            ],
+        ];
+
+        $this->setHeader('Authorization', 'Bearer ' . $this->getAuthToken());
+
+        $result = $this->postJson($this->buildUnsubscribeTopicUrl(), $data, $this->getHeaders());
+        if (!isset($result['code']) || $result['code'] != self::OK_CODE) {
+            throw new GatewayErrorException(sprintf(
+                '华为推送失败 > [%s] %s',
+                isset($result['code']) ? $result['code'] : '-99',
+                json_encode($result, JSON_UNESCAPED_UNICODE)
+            ));
+        }
+        return $result['requestId'];
+    }
+
+    public function requestAuthToken()
     {
         $data = [
             'grant_type' => 'client_credentials',
@@ -123,6 +225,16 @@ class HuaweiV2Gateway extends Gateway
         return sprintf(self::PUSH_URL, $this->config->get('clientId'));
     }
 
+    protected function buildSubscribeTopicUrl()
+    {
+        return sprintf(self::SUBSCRIBE_TOPIC_URL, $this->config->get('clientId'));
+    }
+
+    protected function buildUnsubscribeTopicUrl()
+    {
+        return sprintf(self::UNSUBSCRIBE_TOPIC_URL, $this->config->get('clientId'));
+    }
+
     protected function formatTo($to)
     {
         if (!is_array($to)) {
@@ -133,8 +245,4 @@ class HuaweiV2Gateway extends Gateway
         return $to;
     }
 
-    public function pushTopic($to, AbstractMessage $message, array $options = [])
-    {
-        // TODO: Implement pushTopic() method.
-    }
 }

@@ -9,6 +9,7 @@ use think\Controller;
 use think\facade\Cache;
 use xmpush\Builder;
 use xmpush\Constants;
+use xmpush\DevTools;
 use xmpush\Sender;
 use xmpush\Subscription;
 use xmpush\TargetedMessage;
@@ -205,8 +206,16 @@ class Notice
             $item['platform'] = $platform;
             $item['tokens'] = $tokens;
             if ($platform == "xiaomi") {
+
                 $push = new Push($this->config);
-                $push->setPusher($platform);
+                $push->setPusher($platform, null);
+                $result = $push->pushTopicNotice($topic, $message);
+
+            } elseif ($platform == "huawei-v2") {
+
+                $push = new Push($this->config);
+                $authToken = $push->requestAuthToken();
+                $push->setPusher($platform, $authToken);
                 $result = $push->pushTopicNotice($topic, $message);
 
             } else {
@@ -226,7 +235,7 @@ class Notice
         $push = new Push($this->config);
         $push->setPusher($platform);
 
-        $authToken = $push->getAuthToken();
+        $authToken = $push->requestAuthToken();
         $options = array();
         $options['token'] = $authToken;
 
@@ -235,6 +244,20 @@ class Notice
         } catch (Exception $e) {
             return $e;
         }
+    }
+
+
+    public function getTopicOfRegid($regid)
+    {
+        $platform = 'xiaomi';
+        $item['platform'] = $platform;
+        $push = new Push($this->config);
+        $push->setPusher($platform);
+
+        $devTools = new DevTools();
+        $res = $devTools->getTopicsOf("com.quansu.trailertiger", $regid);
+        return $res;
+
     }
 
     private function createNotifyid()

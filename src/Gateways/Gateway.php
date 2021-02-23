@@ -22,6 +22,7 @@ abstract class Gateway implements GatewayInterface
     protected $timeout;
 
     protected $headers = [];
+    private $authToken;
 
 
     /**
@@ -54,6 +55,15 @@ abstract class Gateway implements GatewayInterface
     {
         // TODO: Implement removeTopic() method.
         return null;
+    }
+
+    public function setAuthToken($token)
+    {
+        $this->authToken = $token;
+    }
+    public function getAuthToken()
+    {
+        return $this->authToken;
     }
 
     /**

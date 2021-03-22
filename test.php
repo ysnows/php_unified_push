@@ -6,9 +6,11 @@ require __DIR__ . '/vendor/autoload.php';
 
 
 $notice = new Notice();
-$regid = "0S24GxgOtrU7QZ29nPlg18uEfgeiT33ZVW88XWj78PjwtAibK6P/NBSOcZFVBgIE";
+$regid = "SV5i0vH6rWsMgRA7VcAR9WOJ6qrcRehdOZ4+W4ObRhvuMcHfE4dffpfpjSRJ5/6X";
 //$res = $notice->addTopic('topic_XBTC_10052', 'xiaomi', $regid);
 //$res = $notice->removeTopic('topic_XBTC_10052', 'xiaomi', '0S24GxgOtrU7QZ29nPlg18uEfgeiT33ZVW88XWj78PjwtAibK6P/NBSOcZFVBgIE');
-$res = $notice->pushToTopic('topic_XBTC_10052', "hello1", "world", "");
+//$res = $notice->pushToTopic('topic_XBTC_10052', "hello1", "world", "");
 //$res = $notice->getTopicOfRegid($regid);
-echo json_encode($res->getRaw());
+//echo json_encode($res->getRaw());
+$notice->mitest($regid);
+

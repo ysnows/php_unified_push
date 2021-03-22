@@ -8,7 +8,8 @@
  */
 namespace xmpush;
 
-class Builder extends Message {
+class Builder extends Message
+{
     const soundUri = 'sound_uri';
     const notifyForeground = 'notify_foreground';
     const notifyEffect = 'notify_effect';
@@ -18,7 +19,8 @@ class Builder extends Message {
     const callback = 'callback';
     const instantNotify = 'instant_notify';
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->notify_id = 0;
         $this->notify_type = -1;
         $this->payload = '';
@@ -26,27 +28,33 @@ class Builder extends Message {
         parent::__construct();
     }
 
-    public function payload($payload) {
+    public function payload($payload)
+    {
         $this->payload = $payload;
     }
 
-    public function title($title) {
+    public function title($title)
+    {
         $this->title = $title;
     }
 
-    public function description($description) {
+    public function description($description)
+    {
         $this->description = $description;
     }
 
-    public function passThrough($passThrough) {
+    public function passThrough($passThrough)
+    {
         $this->pass_through = $passThrough;
     }
 
-    public function notifyType($type) {
+    public function notifyType($type)
+    {
         $this->notify_type = $type;
     }
 
-    public function restrictedPackageNames($packageNameList) {
+    public function restrictedPackageNames($packageNameList)
+    {
         $jointPackageNames = '';
         foreach ($packageNameList as $packageName) {
             if (isset($packageName)) {
@@ -56,15 +64,18 @@ class Builder extends Message {
         $this->restricted_package_name = $jointPackageNames;
     }
 
-    public function timeToLive($ttl) {
+    public function timeToLive($ttl)
+    {
         $this->time_to_live = $ttl;
     }
 
-    public function timeToSend($timeToSend) {
+    public function timeToSend($timeToSend)
+    {
         $this->time_to_send = $timeToSend;
     }
 
-    public function instantNotify($isInstantNotify) {
+    public function instantNotify($isInstantNotify)
+    {
         if ($isInstantNotify) {
             $this->extra(self::instantNotify, "1");
         } else {
@@ -72,19 +83,23 @@ class Builder extends Message {
         }
     }
 
-    public function notifyId($notifyId) {
+    public function notifyId($notifyId)
+    {
         $this->notify_id = $notifyId;
     }
 
-    public function hybridPath($value) {
+    public function hybridPath($value)
+    {
         $this->extra[self::HYBRID_PATH] = $value;
     }
 
-    public function extra($key, $value) {
+    public function extra($key, $value)
+    {
         $this->extra[$key] = $value;
     }
 
-    public function build() {
+    public function build()
+    {
         $keys = array(
             'payload', 'title', 'description', 'pass_through', 'notify_type',
             'restricted_package_name', 'time_to_live', 'time_to_send', 'notify_id'

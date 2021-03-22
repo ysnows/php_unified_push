@@ -50,7 +50,7 @@ class Notice
         ]
     ];
 
-    public function mitest()
+    public function mitest($regid)
     {
         $secret = 'iAg1xJdHTKUlFNsvJaflaA==';
         $package = 'com.quansu.trailertiger';
@@ -72,33 +72,36 @@ class Notice
         $message1->title($title);  // 通知栏的title
         $message1->description($desc); // 通知栏的descption
         $message1->passThrough(0);  // 这是一条通知栏消息，如果需要透传，把这个参数设置成1,同时去掉title和descption两个参数
+        $message1->extra(Builder::soundUri, "android.resource://com.quansu.trailertiger/2131755008");
+        $message1->notifyType(7);  // 这是一条通知栏消息，如果需要透传，把这个参数设置成1,同时去掉title和descption两个参数
         $message1->payload($payload); // 携带的数据，点击后将会通过客户端的receiver中的onReceiveMessage方法传入。
         $message1->extra(Builder::notifyForeground, 1); // 应用在前台是否展示通知，如果不希望应用在前台时候弹出通知，则设置这个参数为0
-        $message1->notifyId(2); // 通知类型。最多支持0-4 5个取值范围，同样的类型的通知会互相覆盖，不同类型可以在通知栏并存
+        $message1->notifyId(25); // 通知类型。最多支持0-4 5个取值范围，同样的类型的通知会互相覆盖，不同类型可以在通知栏并存
+
         $message1->build();
 //        $targetMessage = new TargetedMessage();
 //        $targetMessage->setTarget('alias1', TargetedMessage::TARGET_TYPE_ALIAS); // 设置发送目标。可通过regID,alias和topic三种方式发送
 //        $targetMessage->setMessage($message1);
 
 // message2 演示预定义点击行为中的点击直接打开app行为
-        $message2 = new Builder();
-        $message2->title($title);
-        $message2->description($desc);
-        $message2->passThrough(0);
-        $message2->payload($payload); // 对于预定义点击行为，payload会通过点击进入的界面的intent中的extra字段获取，而不会调用到onReceiveMessage方法。
-        $message2->extra(Builder::notifyEffect, 1); // 此处设置预定义点击行为，1为打开app
-        $message2->extra(Builder::notifyForeground, 1);
-        $message2->notifyId(0);
-        $message2->build();
-        $targetMessage2 = new TargetedMessage();
-        $targetMessage2->setTarget('alias2', TargetedMessage::TARGET_TYPE_ALIAS);
-        $targetMessage2->setMessage($message2);
+//        $message2 = new Builder();
+//        $message2->title($title);
+//        $message2->description($desc);
+//        $message2->passThrough(0);
+//        $message2->payload($payload); // 对于预定义点击行为，payload会通过点击进入的界面的intent中的extra字段获取，而不会调用到onReceiveMessage方法。
+//        $message2->extra(Builder::notifyEffect, 1); // 此处设置预定义点击行为，1为打开app
+//        $message2->extra(Builder::notifyForeground, 1);
+//        $message2->notifyId(0);
+//        $message2->build();
+//        $targetMessage2 = new TargetedMessage();
+//        $targetMessage2->setTarget('alias2', TargetedMessage::TARGET_TYPE_ALIAS);
+//        $targetMessage2->setMessage($message2);
 
 //        $targetMessageList = array($targetMessage, $targetMessage2);
 //print_r($sender->multiSend($targetMessageList,TargetedMessage::TARGET_TYPE_ALIAS)->getRaw());
 
 
-        $result = $sender->sendToIds($message1, ["0S24GxgOtrU7QZ29nPlg18uEfgeiT33ZVW88XWj78PjwtAibK6P/NBSOcZFVBgIE"]);
+        $result = $sender->sendToIds($message1, [$regid]);
         return $result;
 //        print_r($sender->sendToAliases($message1, $aliasList)->getRaw());
 //$stats = new Stats();

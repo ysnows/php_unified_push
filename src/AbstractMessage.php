@@ -52,6 +52,8 @@ abstract class AbstractMessage implements MessageInterface
      * @var string 消息聚合标签
      */
     public $notifyId;
+    public $notifyType;
+    public $soundUrl;
 
     /**
      * @var array 厂商扩展参数

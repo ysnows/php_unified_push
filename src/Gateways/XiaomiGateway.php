@@ -123,6 +123,8 @@ class XiaomiGateway extends Gateway
         $msg->title($message->title);
         $msg->description($message->subTitle);
         $msg->passThrough(0);
+        $msg->notifyType($message->notifyType);
+        $msg->extra(Builder::soundUri, $message->soundUrl);
         $msg->payload(json_encode($message->payload)); // 对于预定义点击行为，payload会通过点击进入的界面的intent中的extra字段获取，而不会调用到onReceiveMessage方法。
 //        $msg->extra(Builder::notifyEffect, 1); // 此处设置预定义点击行为，1为打开app
         $msg->extra(Builder::notifyForeground, 1);

@@ -59,7 +59,7 @@ class VivoGateway extends Gateway
 
     public function pushNotice($to, AbstractMessage $message, array $options = [])
     {
-        if (! empty($options['token'])) {
+        if (!empty($options['token'])) {
             $token = $options['token'];
             unset($options['token']);
         } else {
@@ -194,5 +194,20 @@ class VivoGateway extends Gateway
     public function pushTopic($to, AbstractMessage $message, array $options = [])
     {
         // TODO: Implement pushTopic() method.
+    }
+
+    public function addUserAccount($regid, $userAccount)
+    {
+        // TODO: Implement addUserAccount() method.
+    }
+
+    public function removeUserAccount($regid, $userAccount)
+    {
+        // TODO: Implement removeUserAccount() method.
+    }
+
+    public function pushUserAccount($to, AbstractMessage $message, array $options = [])
+    {
+        // TODO: Implement pushUserAccount() method.
     }
 }

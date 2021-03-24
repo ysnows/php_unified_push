@@ -200,4 +200,19 @@ class IosTokenGateway extends Gateway
     {
         // TODO: Implement pushTopic() method.
     }
+
+    public function addUserAccount($regid, $userAccount)
+    {
+        // TODO: Implement addUserAccount() method.
+    }
+
+    public function removeUserAccount($regid, $userAccount)
+    {
+        // TODO: Implement removeUserAccount() method.
+    }
+
+    public function pushUserAccount($to, AbstractMessage $message, array $options = [])
+    {
+        // TODO: Implement pushUserAccount() method.
+    }
 }

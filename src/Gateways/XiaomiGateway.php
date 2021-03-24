@@ -55,7 +55,6 @@ class XiaomiGateway extends Gateway
         $msg->notifyType($message->notifyType);
         $msg->extra(Builder::soundUri, $message->soundUrl);
         $msg->payload(json_encode($message->payload)); // 对于预定义点击行为，payload会通过点击进入的界面的intent中的extra字段获取，而不会调用到onReceiveMessage方法。
-//        $msg->extra(Builder::notifyEffect, 1); // 此处设置预定义点击行为，1为打开app
         $msg->extra(Builder::notifyForeground, 1);
         $msg->restrictedPackageNames([$this->config->get("appPkgName")]);
         $msg->notifyId($message->notifyId);
@@ -65,58 +64,6 @@ class XiaomiGateway extends Gateway
         return $this->sender->sendToIds($msg, $to);
     }
 
-    public function pushNoticeBac($to, AbstractMessage $message, array $options = [])
-    {
-        $this->setHeader('Authorization', sprintf('key=%s', $this->config->get('appSecret')));
-        $data = [
-            'payload' => json_encode($message->payload),
-            'restricted_package_name' => $this->config->get('appPkgName'),
-            'pass_through' => 0,
-            'title' => $message->title,
-            'notify_id' => $message->notifyId,
-            'description' => $message->subTitle,
-//            'extra.notify_effect' => '1',
-            'extra.intent_uri' => $this->generateIntent($this->config->get('appPkgName'), $message->extra),
-            'registration_id' => $this->formatTo($to),
-        ];
-        $message->notifyId && $data['extra.jobkey'] = $message->notifyId;
-
-        if ($message->callback) {
-            $data['extra.callback'] = $message->callback;
-            if ($message->callbackParam) {
-                $data['extra.callback.param'] = $message->callbackParam;
-            }
-        }
-        $data = $this->mergeGatewayOptions($data, $message->gatewayOptions);
-
-        $result = $this->post(self::PUSH_URL, $data, $this->getHeaders());
-        $this->assertFailure($result, '小米推送失败');
-
-        $returnData = $result['data'];
-        return $returnData['id'];
-    }
-
-    protected function formatTo($to)
-    {
-        if (!is_array($to)) {
-            $to = [$to];
-        } else {
-            $this->checkMaxToken($to);
-        }
-        return implode(',', $to);
-    }
-
-    protected function assertFailure($result, $message)
-    {
-        if (!isset($result['code']) || $result['code'] != self::OK_CODE) {
-            throw new GatewayErrorException(sprintf(
-                '%s > [%s] %s',
-                $message,
-                isset($result['code']) ? $result['code'] : '-99',
-                json_encode($result, JSON_UNESCAPED_UNICODE)
-            ));
-        }
-    }
 
     public function pushTopic($topic, AbstractMessage $message, array $options = [])
     {
@@ -128,7 +75,6 @@ class XiaomiGateway extends Gateway
         $msg->extra(Builder::soundUri, 'android.resource://' . Constants::$packageName . '/raw/' . trim($message->soundUrl));
 
         $msg->payload(json_encode($message->payload)); // 对于预定义点击行为，payload会通过点击进入的界面的intent中的extra字段获取，而不会调用到onReceiveMessage方法。
-//        $msg->extra(Builder::notifyEffect, 1); // 此处设置预定义点击行为，1为打开app
         $msg->extra(Builder::notifyForeground, 1);
         $msg->restrictedPackageNames([$this->config->get("appPkgName")]);
         $msg->notifyId($message->notifyId);
@@ -147,5 +93,20 @@ class XiaomiGateway extends Gateway
     {
         $subscription = new Subscription();
         return $subscription->unsubscribe($regid, $topic);
+    }
+
+    public function addUserAccount($regid, $userAccount)
+    {
+        return $this->addTopic($regid, $userAccount);
+    }
+
+    public function removeUserAccount($regid, $userAccount)
+    {
+        return $this->removeTopic($regid, $userAccount);
+    }
+
+    public function pushUserAccount($to, AbstractMessage $message, array $options = [])
+    {
+        return $this->pushTopic($to, $message, $options);
     }
 }

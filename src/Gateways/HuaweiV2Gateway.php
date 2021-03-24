@@ -48,6 +48,10 @@ class HuaweiV2Gateway extends Gateway
                 'title' => $message->title,
                 'body' => $message->subTitle,
                 'tag' => $message->notifyId ?: null,
+                'default_sound' => true,
+                'importance' => 'NORMAL',
+                'sound' => 'raw/order',
+                'channel_id' => 'RingRing',
 //                'notify_id' => $message->notifyId ?: -1,
                 'click_action' => [
                     'type' => 1,
@@ -260,4 +264,18 @@ class HuaweiV2Gateway extends Gateway
         return $to;
     }
 
+    public function addUserAccount($regid, $userAccount)
+    {
+
+    }
+
+    public function removeUserAccount($regid, $userAccount)
+    {
+
+    }
+
+    public function pushUserAccount($to, AbstractMessage $message, array $options = [])
+    {
+
+    }
 }

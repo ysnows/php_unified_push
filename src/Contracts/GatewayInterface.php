@@ -11,9 +11,20 @@ interface GatewayInterface
 {
     public function getName();
 
+
     public function addTopic($regid, $topic);
 
     public function removeTopic($regid, $topic);
+
+    public function pushTopic($to, AbstractMessage $message, array $options = []);
+
+
+    public function addUserAccount($regid, $userAccount);
+
+    public function removeUserAccount($regid, $userAccount);
+
+    public function pushUserAccount($to, AbstractMessage $message, array $options = []);
+
 
     public function getGatewayName();
 
@@ -26,5 +37,4 @@ interface GatewayInterface
 
     public function pushNotice($to, AbstractMessage $message, array $options = []);
 
-    public function pushTopic($to, AbstractMessage $message, array $options = []);
 }

@@ -7,7 +7,7 @@ use MingYuanYun\Push\Gateways\HuaweiV2Gateway;
 use MingYuanYun\Push\Gateways\XiaomiGateway;
 use think\facade\Config;
 
-class Notice
+class Pusher
 {
 
     private $config = [];

@@ -18,7 +18,6 @@
     "guzzlehttp/guzzle": ">=6.0.0",
     "php": ">=5.5",
     "yunchuang/php-jwt": "^1.0",
-    "topthink/think-installer": "^2.0",
     "topthink/framework": "^5.1.18",
     "ext-fileinfo": "*"
   },

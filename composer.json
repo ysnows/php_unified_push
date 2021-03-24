@@ -13,16 +13,24 @@
       "email": "ysnows@163.com"
     }
   ],
-  "version": "1.0.8",
+  "version": "1.0.9",
   "require": {
     "guzzlehttp/guzzle": ">=6.0.0",
     "php": ">=5.5",
-    "yunchuang/php-jwt": "^1.0"
+    "yunchuang/php-jwt": "^1.0",
+    "topthink/think-installer": "^2.0",
+    "topthink/framework": "^5.1.18",
+    "ext-fileinfo": "*"
   },
   "autoload": {
     "psr-4": {
       "MingYuanYun\\Push\\": "src/",
       "xmpush\\": "libs/xmpush/"
+    }
+  },
+  "extra": {
+    "think-config": {
+      "push": "src/config/worker.php"
     }
   }
 }

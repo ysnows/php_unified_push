@@ -66,6 +66,14 @@ class Push
         return $this->gateway->pushTopic($topic, $message, $options);
     }
 
+    public function pushUserAccount($userAccount, $message, array $options = [])
+    {
+        $message = $this->formatMessage($message);
+        $options = $this->checkOptions($options);
+
+        return $this->gateway->pushUserAccount($userAccount, $message, $options);
+    }
+
     public function extend($name, Closure $callback)
     {
         $this->customGateways[$name] = $callback;
@@ -143,5 +151,15 @@ class Push
     public function removeTopic($regid, $topic)
     {
         return $this->gateway->removeTopic($regid, $topic);
+    }
+
+    public function addUserAccount($regid, $userAccount)
+    {
+        return $this->gateway->addUserAccount($regid, $userAccount);
+    }
+
+    public function removeUserAccount($regid, $userAccount)
+    {
+        return $this->gateway->removeUserAccount($regid, $userAccount);
     }
 }

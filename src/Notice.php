@@ -14,7 +14,7 @@ class Notice
 
     public function __construct()
     {
-        $this->config = Config::pull('push');
+        $this->config = Config::pull('push')['gateway'];
     }
 
     public function addTopic($topic, $platform, $token)

@@ -12,6 +12,8 @@
 namespace MingYuanYun\Push;
 
 
+use think\facade\Config;
+
 /**
  * Redis缓存驱动，适合单机部署、有前端代理实现高可用的场景，性能最好
  * 有需要在业务层实现读写分离、或者使用RedisCluster的需求，请使用Redisd驱动
@@ -41,6 +43,7 @@ class Redis extends Driver
     public function __construct($options = [])
     {
         if (!empty($options)) {
+            $options = Config::pull("push")['redis'];
             $this->options = array_merge($this->options, $options);
         }
 

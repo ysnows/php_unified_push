@@ -5,7 +5,10 @@ namespace MingYuanYun\Push\Gateways;
 
 use MingYuanYun\Push\AbstractMessage;
 use MingYuanYun\Push\Exceptions\GatewayErrorException;
+use MingYuanYun\Push\Push;
+use MingYuanYun\Push\Redis;
 use MingYuanYun\Push\Traits\HasHttpRequest;
+use MongoDB\Driver\Exception\Exception;
 
 class HuaweiV2Gateway extends Gateway
 {
@@ -267,15 +270,70 @@ class HuaweiV2Gateway extends Gateway
     public function addUserAccount($regid, $userAccount)
     {
 
+        $redis = new Redis();
+        $res = $redis->handler()->sAdd(self::GATEWAY_NAME . '_' . $userAccount, $regid);
+        return $res;
+
     }
 
     public function removeUserAccount($regid, $userAccount)
     {
-
+        $redis = new Redis();
+        $res = $redis->handler()->sRem(self::GATEWAY_NAME . '_' . $userAccount, $regid);
+        return $res;
     }
 
-    public function pushUserAccount($to, AbstractMessage $message, array $options = [])
+    public function pushUserAccount($userAccount, AbstractMessage $message, array $options = [])
     {
 
+        $redis = new Redis();
+        $tokens = $redis->handler()->sMembers(self::GATEWAY_NAME . '_' . $userAccount);
+
+        $token_arr = array_chunk($tokens, 1000);
+
+        try {
+            if (empty($this->getAuthToken())) {
+                return "请先获取authToken";
+            }
+
+            $res = [];
+            foreach ($token_arr as $item) {
+                $res[] = $this->pushNotice($item, $message);
+            }
+
+            return $res;
+        } catch (Exception $e) {
+            return $e;
+        } catch (GatewayErrorException $e) {
+            return $e;
+        }
+    }
+
+
+    /**
+     * @param $platform
+     * @param Push $push
+     * @return array
+     * @throws GatewayErrorException
+     */
+    function getAuthToken()
+    {
+        $redis = new Redis();
+
+        if ($redis->has('auth_token_' . self::GATEWAY_NAME)) {
+            $authToken = $redis->get('auth_token_' . self::GATEWAY_NAME);
+            $this->setAuthToken($authToken);
+            return $authToken ? $authToken : null;
+        }
+
+        if (!$redis->has('auth_token_' . self::GATEWAY_NAME)) {
+            $authToken = $this->requestAuthToken();
+            if (!empty($authToken)) {
+                $redis->set('auth_token_' . self::GATEWAY_NAME, $authToken['token'], $authToken['expires']);
+                $this->setAuthToken($authToken);
+                return $authToken;
+            }
+        }
+        return null;
     }
 }

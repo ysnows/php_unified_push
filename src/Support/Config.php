@@ -137,4 +137,10 @@ class Config implements ArrayAccess
             unset($this->config[$offset]);
         }
     }
+
+
+    public function toArray()
+    {
+        return $this->config;
+    }
 }

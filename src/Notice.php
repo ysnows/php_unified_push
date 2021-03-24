@@ -48,14 +48,14 @@ class Notice
     }
 
 
-    public function pushToTopic($topic, AbstractMessage $message)
+    public function pushToTopic($topic,  $message)
     {
-        if (is_string($message->payload)) {
-            $message->payload = json_decode($message->payload, true);
+        if (is_string($message['payload'])) {
+            $message['payload'] = json_decode($message['payload'], true);
         }
 
-        $message->businessId = uniqid();
-        $message->notifyId = $this->createNotifyid();
+        $message['businessId'] = uniqid();
+        $message['notifyId'] = $this->createNotifyid();
 
         $gateway_name_arr = array(XiaomiGateway::GATEWAY_NAME, HuaweiV2Gateway::GATEWAY_NAME);
 

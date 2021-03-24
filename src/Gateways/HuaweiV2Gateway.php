@@ -97,7 +97,7 @@ class HuaweiV2Gateway extends Gateway
                 json_encode($result, JSON_UNESCAPED_UNICODE)
             ));
         }
-        return $result['requestId'];
+        return $result;
     }
 
     public function pushTopic($topic, AbstractMessage $message, array $options = [])
@@ -157,7 +157,7 @@ class HuaweiV2Gateway extends Gateway
                 json_encode($result, JSON_UNESCAPED_UNICODE)
             ));
         }
-        return $result['requestId'];
+        return $result;
     }
 
     public function addTopic($regid, $topic)

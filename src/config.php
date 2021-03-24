@@ -34,7 +34,7 @@ return [
     'redis' => [
         'host' => '127.0.0.1',
         'port' => 6379,
-        'password' => 'Hi9ldi2IksjN',
+        'password' => 'password',
         'select' => 11,
         'timeout' => 0,
         'expire' => 0,

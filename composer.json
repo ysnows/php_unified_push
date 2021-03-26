@@ -13,7 +13,7 @@
       "email": "ysnows@163.com"
     }
   ],
-  "version": "1.1.4",
+  "version": "1.1.5",
   "require": {
     "guzzlehttp/guzzle": ">=6.0.0",
     "php": ">=5.5",

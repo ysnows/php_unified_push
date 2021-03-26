@@ -80,7 +80,7 @@ class XiaomiGateway extends Gateway
         $msg->notifyId($message->notifyId);
         $msg->build();
 
-        return $this->sender->broadcast($msg, $topic);
+        return $this->sender->broadcast($msg, $topic)->getRaw();
     }
 
     public function addTopic($regid, $topic)

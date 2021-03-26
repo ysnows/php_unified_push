@@ -48,7 +48,7 @@ class Pusher
     }
 
 
-    public function pushToTopic($topic,  $message)
+    public function pushToTopic($topic, $message)
     {
         if (is_string($message['payload'])) {
             $message['payload'] = json_decode($message['payload'], true);
@@ -72,16 +72,18 @@ class Pusher
         return $res;
     }
 
-    public function pushToUserAccount($userAccount, AbstractMessage $message)
+    public function pushToUserAccount($userAccount, $message)
     {
-        if (is_string($message->payload)) {
-            $message->payload = json_decode($message->payload, true);
+        if (is_string($message['payload'])) {
+            $message['payload'] = json_decode($message['payload'], true);
         }
 
-        $message->businessId = uniqid();
-        $message->notifyId = $this->createNotifyid();
+        $message['businessId'] = uniqid();
+        $message['notifyId'] = $this->createNotifyid();
 
-        $gateway_name_arr = array(XiaomiGateway::GATEWAY_NAME, HuaweiV2Gateway::GATEWAY_NAME);
+        $gateway_name_arr = array_keys($this->config);
+
+//        $gateway_name_arr = array(XiaomiGateway::GATEWAY_NAME, HuaweiV2Gateway::GATEWAY_NAME);
 
 
         $res = array();
@@ -89,7 +91,7 @@ class Pusher
             $push = new Push($this->config);
             $push->setPusher($item);
             $result = $push->pushUserAccount($userAccount, $message);
-            $res[] = $result;
+            $res[$item] = $result;
         }
 
 
